@@ -1,0 +1,61 @@
+<html>
+  <head>
+    <title>Crimemap</title>
+    <style>
+      html {
+        font-family: "Helvetica";
+        background: White;
+      }
+      body {
+        background: lightgrey;
+        max-width: 1024px;
+        margin: 0 auto;
+      }
+      #header {
+        padding-top: 5;
+        background: lightsteelblue;
+      }
+      #inner-header {
+        padding-left: 10;
+      }
+      #main {
+        padding-left: 10;
+      }
+      input[type="text"], select {
+        color: grey;
+        border: 1px solid lightsteelblue;
+        height: 30px;
+        line-height: 15px;
+        margin: 2px 6px 16px 0px;
+      }
+      input[type="submit"] {
+        color: black;
+        padding: 5px 10px 5px 10px;
+        background: lightsteelblue;
+        border: none;
+        box-shadow: 1px 1px 1px #4C6E91;
+      }
+      input[type="submit"]:hover {
+        background: steelblue;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="header">
+      <div id="inner-header">
+        <h1>Crimemap v1.0.0-SNAPSHOT [2018-01-31]</h1>
+      </div>
+      <hr />
+    </div>
+    <div id="main">
+      <form action="/add" method="POST">
+        <input type="text" name="userinput" />
+        <input type="submit" value="Submit" />
+      </form>
+      <a href="/clear">clear</a>
+      {% for userinput in data %}
+      <p>{{userinput}}</p>
+      {% endfor %}
+    </div>
+  </body>
+</html>
