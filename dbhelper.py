@@ -1,4 +1,5 @@
 import pymysql
+import datetime
 from cfenv import AppEnv
 
 class DBHelper:
@@ -45,14 +46,37 @@ class DBHelper:
         return cursor.fetchall()
     finally:
         connection.close()
-        
-  def add_input(self, data):
+
+  def get_all_crimes(self):
+    crimes = []
     connection = self.connect()
     try:
-      query = 'INSERT INTO crimes (description) VALUES (%s);'
+      query = 'SELECT category, date, latitude, longitude, description FROM crimes;'
       with connection.cursor() as cursor:
-        cursor.execute(query, data)
+        cursor.execute(query)
+        for row in cursor:
+          crime = {
+            'category': row[0],
+            'date': datetime.datetime.strftime(row[1], '%Y-%m-%d'),
+            'latitude': row[2],
+            'longitude': row[3],
+            'description': row[4]
+          }
+          crimes.append(crime)
+    finally:
+        connection.close()
+    return crimes
+
+  def add_crime(self, category, date, latitude, longitude, description):
+    connection = self.connect()
+    try:
+      query = """INSERT INTO crimes (category, date, latitude, longitude, description)
+                             VALUES (      %s,   %s,       %s,        %s,          %s);"""
+      with connection.cursor() as cursor:
+        cursor.execute(query, (category, date, latitude, longitude, description))
         connection.commit()
+    except Exception as e:
+      print(e)
     finally:
       connection.close()
 

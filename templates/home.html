@@ -1,61 +1,81 @@
-<html>
+<!DOCTYPE html>
+<html lang="en">
   <head>
+    <link type="text/css" rel="stylesheet" href="{{url_for('static', filename='css/style.css')}}"/>
+    <script type="text/javascript"
+            src="https://maps.googleapis.com/maps/api/js">
+    </script>
+    <script type="text/javascript">
+      var map;
+      var marker;
+      function initialize() {
+        console.log()
+        var mapOptions = {
+          center: new google.maps.LatLng(43.789063,-79.4170724),
+          zoom: 15
+        };
+        var map_canvas = document.getElementById("map-canvas");
+        // console.log("map_canvas = " + map_canvas);
+        map = new google.maps.Map(map_canvas, mapOptions);
+        google.maps.event.addListener(map, 'click', function(event) {
+          placeMarker(event.latLng);
+        });
+        placeCrimes({{crimes | safe}});
+      }
+
+      function placeMarker(location) {
+        if (marker) {
+          marker.setPosition(location);
+        } else {
+          marker = new google.maps.Marker({
+            position: location,
+            map: map
+          });
+        }
+        document.getElementById('latitude').value = location.lat();
+        document.getElementById('longitude').value = location.lng();
+      }
+
+      function placeCrimes(crimes) {
+        for (i=0; i < crimes.length; i++) {
+          crime = new google.maps.Marker( {
+            position: new google.maps.LatLng(crimes[i].latitude, crimes[i].longitude),
+            map: map,
+            title: crimes[i].date + "\n" +
+                   crimes[i].category + "\n" +
+                   crimes[i].description
+          });
+        }
+      }
+    </script>
     <title>Crimemap</title>
-    <style>
-      html {
-        font-family: "Helvetica";
-        background: White;
-      }
-      body {
-        background: lightgrey;
-        max-width: 1024px;
-        margin: 0 auto;
-      }
-      #header {
-        padding-top: 5;
-        background: lightsteelblue;
-      }
-      #inner-header {
-        padding-left: 10;
-      }
-      #main {
-        padding-left: 10;
-      }
-      input[type="text"], select {
-        color: grey;
-        border: 1px solid lightsteelblue;
-        height: 30px;
-        line-height: 15px;
-        margin: 2px 6px 16px 0px;
-      }
-      input[type="submit"] {
-        color: black;
-        padding: 5px 10px 5px 10px;
-        background: lightsteelblue;
-        border: none;
-        box-shadow: 1px 1px 1px #4C6E91;
-      }
-      input[type="submit"]:hover {
-        background: steelblue;
-      }
-    </style>
   </head>
-  <body>
+  <body onload="initialize()">
     <div id="header">
       <div id="inner-header">
-        <h1>Crimemap v1.0.0 [2018-02-03]</h1>
+        <h1>Crimemap&nbsp;<font size=-1>(v2.0.0 [2018-02-17])</font></h1>
       </div>
       <hr />
     </div>
-    <div id="main">
-      <form action="/add" method="POST">
-        <input type="text" name="userinput" />
-        <input type="submit" value="Submit" />
+    <div id="map-canvas"></div>
+    <div id="newcrimeform">
+      <h2>Submit new crime</h2>
+      <form action="/submitcrime" method="POST">
+        <label for="category">Category</label>
+        <select name="category" id="category">
+          <option value="mugging">mugging</option>
+          <option value="breakin">break-in</option>
+        </select>
+        <label for="date">Date</label>
+        <input name="date" id="date" type="date"/>
+        <label for="latitude">Latitude</label>
+        <input name="latitude" id="latitude" type="text"/>
+        <label for="longitude">Longitude</label>
+        <input name="longitude" id="longitude" type="text"/><br/>
+        <label for="description">Description</label>
+        <textarea name="description" id="description" placeholder="A brief but detailed description of the crime"></textarea>
+        <input type="submit" value="Submit"/>
       </form>
-      <a href="/clear">clear</a>
-      {% for userinput in data %}
-      <p>{{userinput}}</p>
-      {% endfor %}
     </div>
   </body>
 </html>
