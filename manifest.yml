@@ -1,7 +1,7 @@
 ---
 applications:
 - name: crimemap
-  memory: 128MB
+  memory: 96MB
   disk_quota: 256MB
   random-route: true
   buildpack: python_buildpack
